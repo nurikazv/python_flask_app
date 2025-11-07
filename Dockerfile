@@ -3,6 +3,7 @@
 ARG PYTHON_VERSION=3.12
 ARG ALPINE_VERSION=3.22
 
+
 # python:3.12-alpine3.22 is used as base image for the application
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
@@ -19,14 +20,19 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Buffering in Python
 
 # Buffering = instead of sending outputs piece by piece, the buffering sends a single output = output is a log
-
+# we should discuss with devolopers does app need PYC or Buffering
 ENV PYTHONUNBUFFERED=1
+
 
 WORKDIR /app
 
+
+#copy from current directory into WORKDIR. source -> destination
 COPY . .
 
+
 RUN python -m pip install -r requirements.txt
+
 
 RUN adduser \
     --disabled-password \
@@ -38,6 +44,12 @@ RUN adduser \
 
 USER pythonuser
 
+# How can we prevent from running as root user? nobody/sbin/nologin 
+# nobody can't execute anything
+# USER nobody   --> pretty common
+
+
 EXPOSE 8000
 
 CMD [ "python3", "-m", "uvicorn", "app:app", "--host=0.0.0.0", "--port=8000" ]
+
