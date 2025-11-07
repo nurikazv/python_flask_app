@@ -1,57 +1,42 @@
-ARG PYTHON_VERSION=3.12 
-ARG ALPINE_VERSION=3.22
 # ARG is used while building Docker Image, docker build --build-arg, PASSING ARGUMENT
 
+ARG PYTHON_VERSION=3.12
+ARG ALPINE_VERSION=3.22
 
-# python:3.12-alpine3.22 is used as base image for the application 
+# python:3.12-alpine3.22 is used as base image for the application
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
-#1. __pycache__ == only helps to start Python faster by reusing compiled bytecode
-# with container, we start python only once
-# So we dont need __pycache__ in docker container case 
+# 1. __pycache__ = only helps to start Python faster by resusing compiled bytecode 
 # 2. __pycache__ = will have .pyc files (Image Sizer)
-# 3. Docker images are immutable = we need to build a new docker image  every time when there is app updates 
-# - __pycache__= impact repeatable docker image builds
-
+# 3. docker images are immutable = we need to build a new docker image every time when there is app updates
+#  - __pycache__ = impact repeatable docker image builds
 
 # ENV is used inside the running container, SHELL VARIABLE
 
-# Prevents Python from writting PYC (__pycache__) files
-# we should discuss with devolopers does app need PYC or Buffering
+# Prevents Python from writing PYC files
 ENV PYTHONDONTWRITEBYTECODE=1
 
+# Buffering in Python
 
-# Buffering in Python 
-# Buffering = instead of sending outputs piece by piece, the buffering sends a single output = output is a log 
-# we should discuss with devolopers does app need PYC or Buffering
+# Buffering = instead of sending outputs piece by piece, the buffering sends a single output = output is a log
 
-ENV PYTHONUNBUFFERED=1 
+ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app 
-
-# How can we prevent from running as root user? nobody/sbin/nologin 
-# nobody can't execute anything
-# USER nobody   --> pretty common
+WORKDIR /app
 
 COPY . .
 
-
 RUN python -m pip install -r requirements.txt
 
-
-# creating a new user 
-RUN adduser \ 
+RUN adduser \
     --disabled-password \
-    --home "/nonexistent"\
-    --shell "sbin/nologin" \
-    --no-create-home \
-    --uid "10001"\
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \ 
+    --no-create-home \ 
+    --uid "10001" \ 
     pythonuser
 
 USER pythonuser
-
-#copy from current directory into WORKDIR. source -> destination
-
 
 EXPOSE 8000
 
