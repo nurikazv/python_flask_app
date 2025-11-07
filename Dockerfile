@@ -33,6 +33,9 @@ WORKDIR /app
 # nobody can't execute anything
 # USER nobody   --> pretty common
 
+RUN python -m pip install -r requirements.txt
+
+
 # creating a new user 
 RUN adduser \ 
     --disabled-password \
@@ -47,7 +50,6 @@ USER pythonuser
 #copy from current directory into WORKDIR. source -> destination
 COPY . .
 
-RUN python -m pip install -r requirements.txt
 
 EXPOSE 8000
 
