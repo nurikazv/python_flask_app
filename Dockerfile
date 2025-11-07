@@ -33,6 +33,9 @@ WORKDIR /app
 # nobody can't execute anything
 # USER nobody   --> pretty common
 
+COPY . .
+
+
 RUN python -m pip install -r requirements.txt
 
 
@@ -48,7 +51,6 @@ RUN adduser \
 USER pythonuser
 
 #copy from current directory into WORKDIR. source -> destination
-COPY . .
 
 
 EXPOSE 8000
