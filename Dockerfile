@@ -35,7 +35,7 @@ WORKDIR /app
 
 # creating a new user 
 RUN adduser \ 
-    --disable-password \
+    --disabled-password \
     --home "/nonexistent"\
     --shell "sbin/nologin" \
     --no-create-home \
@@ -46,6 +46,8 @@ USER pythonuser
 
 #copy from current directory into WORKDIR. source -> destination
 COPY . .
+
+RUN python -m pip install -r requirements.txt
 
 EXPOSE 8000
 
